@@ -26,6 +26,8 @@ import org.eclipse.debug.core.model.IDebugElement;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IDisconnect;
 import org.eclipse.debug.core.model.IStepFilters;
+import org.eclipse.debug.internal.core.DefaultDebugRuleFactory;
+import org.eclipse.debug.internal.core.IDebugRuleFactory;
 import org.eclipse.jdi.TimeoutException;
 import org.eclipse.jdi.hcr.OperationRefusedException;
 import org.eclipse.jdt.debug.core.JDIDebugModel;
@@ -120,6 +122,9 @@ public abstract class JDIDebugElement extends PlatformObject implements IDebugEl
 		}
 		if (adapter == IDebugTarget.class) {
 			return getDebugTarget();
+		}
+		if (adapter == IDebugRuleFactory.class) {
+		    return DefaultDebugRuleFactory.getDefault(); 
 		}
 		return super.getAdapter(adapter);
 	}

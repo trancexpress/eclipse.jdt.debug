@@ -31,6 +31,7 @@ import org.eclipse.debug.core.IStatusHandler;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.ITerminate;
+import org.eclipse.debug.internal.core.IDebugRuleFactory;
 import org.eclipse.jdt.debug.core.IEvaluationRunnable;
 import org.eclipse.jdt.debug.core.IJavaBreakpoint;
 import org.eclipse.jdt.debug.core.IJavaObject;
@@ -707,6 +708,8 @@ public class JDIThread extends JDIDebugElement implements IJavaThread {
 	public void queueRunnable(Runnable evaluation) {
 		if (fAsyncJob == null) {
 			fAsyncJob= new ThreadJob(this);
+			IDebugRuleFactory factory = (IDebugRuleFactory) getAdapter(IDebugRuleFactory.class);
+			fAsyncJob.setRule(factory.modificationRule(this));
 		}
 		fAsyncJob.addRunnable(evaluation);
 	}
