@@ -5,15 +5,20 @@ package org.eclipse.jdt.internal.debug.core;
  * All Rights Reserved.
  */
  
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugException;
@@ -23,6 +28,8 @@ import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaModelStatusConstants;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -33,7 +40,10 @@ import org.eclipse.jdt.debug.core.IJavaEvaluationListener;
 import org.eclipse.jdt.debug.core.IJavaModifiers;
 import org.eclipse.jdt.debug.core.IJavaStackFrame;
 import org.eclipse.jdt.debug.core.IJavaThread;
+import org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
+import org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
 import org.eclipse.jdt.internal.core.BufferManager;
+import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 
 import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.Field;
@@ -777,7 +787,7 @@ public class JDIStackFrame extends JDIDebugElement implements IJavaStackFrame {
 		return -1;
 	}
 	
-	protected IFile getFile() throws DebugException {
+	protected byte[] getBytes() throws DebugException {
 		ISourceLocator sl = getSourceLocator();
 		Object source= sl.getSourceElement(this);
 		if (source instanceof IType) {
@@ -789,12 +799,13 @@ public class JDIStackFrame extends JDIDebugElement implements IJavaStackFrame {
 			}
 		}
 		try {
+			IFile file = null;
 			if (source instanceof IClassFile) {
 				IClassFile cf = (IClassFile)source;
 				if (((IPackageFragmentRoot)(cf.getParent().getParent())).isArchive()) {
-					// jar
+					return getBytesForZip(cf);
 				} else {
-					return (IFile)cf.getUnderlyingResource(); 
+					file = (IFile)cf.getUnderlyingResource(); 
 				}
 			} else if (source instanceof ICompilationUnit) {
 				ICompilationUnit cu = (ICompilationUnit)source;
@@ -812,8 +823,10 @@ public class JDIStackFrame extends JDIDebugElement implements IJavaStackFrame {
 				}
 				String typeName = cu.getElementName();
 				typeName = typeName.substring(0, typeName.indexOf('.'));
-				IFile file = container.getFile(new Path(typeName + ".class"));
-				return file;
+				file = container.getFile(new Path(typeName + ".class"));
+			}
+			if (file != null && file.exists()) {
+				return BufferManager.getResourceContentsAsBytes(file);
 			}
 		} catch (JavaModelException e) {
 			// throw exception
@@ -822,16 +835,53 @@ public class JDIStackFrame extends JDIDebugElement implements IJavaStackFrame {
 		return null;
 	}
 	
-	protected byte[] getBytes() throws DebugException {
-		IFile file = getFile();
-		if (file != null && file.exists()) {
+	protected byte[] getBytesForZip(IClassFile classFile) throws JavaModelException {
+		IJavaElement pkg = classFile.getParent();
+		try {
+			JarPackageFragmentRoot root = (JarPackageFragmentRoot) pkg.getParent();
+			ZipFile zip = null;
 			try {
-				return BufferManager.getResourceContentsAsBytes(file);
-			} catch (JavaModelException e) {
-				// throw exception
+				zip = root.getJar();
+				String entryName = pkg.getElementName();
+				entryName = entryName.replace('.', '/');
+				if (entryName.equals(""/*nonNLS*/)) {
+					entryName += classFile.getElementName();
+				} else {
+					entryName += '/' + classFile.getElementName();
+				}
+				return read(zip, entryName);
+			} finally {
+				if (zip != null) {
+					try {
+						zip.close();
+					} catch (IOException e) {
+						// ignore 
+					}
+				}
 			}
+		} catch (IOException ioe) {
+			throw new JavaModelException(ioe, IJavaModelStatusConstants.IO_EXCEPTION);
+		} catch (CoreException e) {
+			throw new JavaModelException(e);
 		}
-		return null;
+
+	}
+	
+	protected byte[] read(ZipFile zip, String filename) throws IOException {
+		ZipEntry ze = zip.getEntry(filename);
+		if (ze == null)
+			return null;
+		InputStream zipInputStream = zip.getInputStream(ze);
+		byte classFileBytes[] = new byte[(int) ze.getSize()];
+		int length = classFileBytes.length;
+		int len = 0;
+		int readSize = 0;
+		while ((readSize != -1) && (len != length)) {
+			readSize = zipInputStream.read(classFileBytes, len, length - len);
+			len += readSize;
+		}
+		zipInputStream.close();
+		return classFileBytes;
 	}
 }
 
