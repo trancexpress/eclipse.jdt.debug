@@ -5,19 +5,24 @@ package org.eclipse.jdt.internal.debug.core;
  * All Rights Reserved.
  */
 
-import java.util.*;
-
+import com.sun.jdi.*;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.*;
-import org.eclipse.debug.core.model.*;
+import org.eclipse.debug.core.model.IStackFrame;
+import org.eclipse.debug.core.model.IThread;
+import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.eval.IEvaluationContext;
 import org.eclipse.jdt.debug.core.IJavaEvaluationListener;
 import org.eclipse.jdt.debug.core.IJavaThread;
-
-import com.sun.jdi.*;
-import com.sun.jdi.event.*;
-import com.sun.jdi.request.*;
+import com.sun.jdi.event.BreakpointEvent;
+import com.sun.jdi.event.ExceptionEvent;
+import com.sun.jdi.event.StepEvent;
+import com.sun.jdi.request.EventRequest;
+import com.sun.jdi.request.EventRequestManager;
+import com.sun.jdi.request.StepRequest;
+import java.util.*;
 
 /** 
  * Proxy to a thread reference on the target.
@@ -420,7 +425,7 @@ public class JDIThread extends JDIDebugElement implements IJavaThread, ITimeoutL
 			requestFailed(IN_EVALUATION, null);
 		}
 		Value result= null;
-		int timeout= getRequestTimeout();
+		int timeout= getReqeustTimeout();
 		try {
 			// set the request timeout to be infinite
 			setRequestTimeout(Integer.MAX_VALUE);
@@ -470,7 +475,7 @@ public class JDIThread extends JDIDebugElement implements IJavaThread, ITimeoutL
 			requestFailed(IN_EVALUATION, null);
 		}
 		ObjectReference result= null;
-		int timeout= getRequestTimeout();
+		int timeout= getReqeustTimeout();
 		try {
 			// set the request timeout to be infinite
 			setRequestTimeout(Integer.MAX_VALUE);
@@ -513,7 +518,7 @@ public class JDIThread extends JDIDebugElement implements IJavaThread, ITimeoutL
 	}
 	
 	/**
-	 * Sets the timeout interval for jdi requests in milliseconds
+	 * Sets the timeout interval for jdi requests in millieseconds
 	 */
 	protected void setRequestTimeout(int timeout) {
 		VirtualMachine vm = getVM();
@@ -526,7 +531,7 @@ public class JDIThread extends JDIDebugElement implements IJavaThread, ITimeoutL
 	 * Returns the timeout interval for jdi requests in millieseconds,
 	 * or -1 if not supported
 	 */
-	protected int getRequestTimeout() {
+	protected int getReqeustTimeout() {
 		VirtualMachine vm = getVM();
 		if (vm instanceof org.eclipse.jdi.VirtualMachine) {
 			return ((org.eclipse.jdi.VirtualMachine) vm).getRequestTimeout();
@@ -590,19 +595,14 @@ public class JDIThread extends JDIDebugElement implements IJavaThread, ITimeoutL
 		}
 	}
 
-	/**
-	 * Suspend the thread based on a breakpoint or watchpoint event
-	 */
-	protected void handleLocatableEvent(LocatableEvent event) {
+	protected void handleBreakpoint(BreakpointEvent event) {
 		abortDropAndStep();
+		IBreakpointManager bpManager= getBreakpointManager();
 		fCurrentBreakpoint= (IMarker) event.request().getProperty(IDebugConstants.BREAKPOINT_MARKER);
 		setRunning(false, DebugEvent.BREAKPOINT);
 		((JDIDebugTarget) getDebugTarget()).expireHitCount(event);
 	}
-	
-	/**
-	 * Suspend the thread based on an exception event
-	 */
+
 	protected void handleException(ExceptionEvent event) {
 		abortDropAndStep();
 		fCurrentBreakpoint= (IMarker) event.request().getProperty(IDebugConstants.BREAKPOINT_MARKER);
@@ -792,7 +792,7 @@ public class JDIThread extends JDIDebugElement implements IJavaThread, ITimeoutL
 	protected void step(int type) throws DebugException {
 		try {
 			setRunning(true, DebugEvent.STEP_START);
-			enableStepRequest(type);			
+			enableStepRequest(type);
 			fThread.resume();
 		} catch (VMDisconnectedException e) {
 		} catch (RuntimeException e) {

@@ -58,7 +58,7 @@ public abstract class TypeImpl extends AccessibleImpl implements Type {
 		// For primitive variables, an appropriate PrimitiveType is always returned. 
 		if (TypeImpl.isPrimitiveSignature(signature))
 			return PrimitiveTypeImpl.create(vmImpl, signature);
-		
+		 
 		// For object variables, the appropriate ReferenceType is returned if it has
 		// been loaded through the enclosing type's class loader.
 		return ReferenceTypeImpl.create(vmImpl, signature, classLoader);

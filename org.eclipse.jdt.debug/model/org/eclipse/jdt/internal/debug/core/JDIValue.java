@@ -385,7 +385,7 @@ public class JDIValue extends JDIDebugElement implements IValue, IJavaValue {
 			}
 		};
 		
-		int timeout = ((JDIThread)getThread()).getRequestTimeout();
+		int timeout = ((JDIThread)getThread()).getReqeustTimeout();
 		Thread evalThread = new Thread(eval);
 		evalThread.start();
 		try {

@@ -5,18 +5,48 @@ package org.eclipse.jdt.internal.debug.core;
  * All Rights Reserved.
  */
  
-import com.sun.jdi.*;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.zip.CRC32;
+
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugException;
-import org.eclipse.debug.core.IDebugStatusConstants;
+import org.eclipse.debug.core.model.ISourceLocator;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
+import org.eclipse.jdt.core.IClassFile;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.eval.IEvaluationContext;
-import org.eclipse.jdt.debug.core.*;
-import java.util.*;
+import org.eclipse.jdt.debug.core.IJavaEvaluationListener;
+import org.eclipse.jdt.debug.core.IJavaModifiers;
+import org.eclipse.jdt.debug.core.IJavaStackFrame;
+import org.eclipse.jdt.debug.core.IJavaThread;
+import org.eclipse.jdt.internal.core.BufferManager;
+
+import com.sun.jdi.AbsentInformationException;
+import com.sun.jdi.Field;
+import com.sun.jdi.LocalVariable;
+import com.sun.jdi.Location;
+import com.sun.jdi.Method;
+import com.sun.jdi.NativeMethodException;
+import com.sun.jdi.ObjectReference;
+import com.sun.jdi.ReferenceType;
+import com.sun.jdi.StackFrame;
+import com.sun.jdi.ThreadReference;
+import com.sun.jdi.VMDisconnectedException;
+import com.sun.jdi.VirtualMachine;
 
 /**
  * Proxy to a stack frame on the target.
@@ -711,6 +741,97 @@ public class JDIStackFrame extends JDIDebugElement implements IJavaStackFrame {
 	
 	protected boolean exists() throws DebugException {
 		return ((JDIThread)getThread()).getChildren0().indexOf(this) != -1;
+	}
+	
+	/**
+	 * Returns <code>true</code> if the class file version of the declaring
+	 * type of this stack frame's method is know on the target, otherwise
+	 * <code>false</code>.
+	 */
+	public boolean isClassFileVersionKnown() throws DebugException {
+		ReferenceType declType = getUnderlyingMethod().declaringType();
+		if (declType instanceof org.eclipse.jdi.hcr.ReferenceType) {
+			return ((org.eclipse.jdi.hcr.ReferenceType)declType).isVersionKnown();
+		} else {
+			return false;
+		}
+	}
+	
+	public int getTargetClassFileVersion() throws DebugException {
+		ReferenceType declType = getUnderlyingMethod().declaringType();
+		if (declType instanceof org.eclipse.jdi.hcr.ReferenceType) {
+			return ((org.eclipse.jdi.hcr.ReferenceType)declType).getClassFileVersion();
+		} else {
+			// throw exception
+			return -1;
+		}		
+	}
+	
+	public int getLocalClassFileVersion() throws DebugException {
+		byte[] bytes = getBytes();
+		if (bytes != null) {
+			CRC32 crc = new CRC32();
+			crc.update(bytes);
+			return (int)crc.getValue();
+		}
+		return -1;
+	}
+	
+	protected IFile getFile() throws DebugException {
+		ISourceLocator sl = getSourceLocator();
+		Object source= sl.getSourceElement(this);
+		if (source instanceof IType) {
+			IType t = (IType)source;
+			if (t.isBinary()) {
+				source = t.getClassFile();
+			} else {
+				source = t.getCompilationUnit();
+			}
+		}
+		try {
+			if (source instanceof IClassFile) {
+				IClassFile cf = (IClassFile)source;
+				if (((IPackageFragmentRoot)(cf.getParent().getParent())).isArchive()) {
+					// jar
+				} else {
+					return (IFile)cf.getUnderlyingResource(); 
+				}
+			} else if (source instanceof ICompilationUnit) {
+				ICompilationUnit cu = (ICompilationUnit)source;
+				IJavaProject jp = cu.getJavaProject();
+				IPath ol = jp.getOutputLocation();
+				IContainer container = (IContainer)jp.getProject().getWorkspace().getRoot().findMember(ol);
+				IPackageFragment pf = (IPackageFragment)cu.getParent();
+				String name = pf.getElementName();
+				int index = name.indexOf('.');
+				while (index >= 0) {
+					String part = name.substring(0, index);
+					name = name.substring(index);
+					container = (IContainer)container.findMember(part);
+					index = name.indexOf('.');
+				}
+				String typeName = cu.getElementName();
+				typeName = typeName.substring(0, typeName.indexOf('.'));
+				IFile file = container.getFile(new Path(typeName + ".class"));
+				return file;
+			}
+		} catch (JavaModelException e) {
+			// throw exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	protected byte[] getBytes() throws DebugException {
+		IFile file = getFile();
+		if (file != null && file.exists()) {
+			try {
+				return BufferManager.getResourceContentsAsBytes(file);
+			} catch (JavaModelException e) {
+				// throw exception
+			}
+		}
+		return null;
 	}
 }
 
