@@ -138,7 +138,9 @@ public abstract class ConnectorImpl implements Connector {
 	}
 	
 	public class StringArgumentImpl extends ArgumentImpl implements com.sun.jdi.connect.Connector.StringArgument {
-		private String fValue;
+        private static final long serialVersionUID = 6009335074727417445L;
+
+        private String fValue;
 
 	 	protected StringArgumentImpl(String name, String description, String label, boolean mustSpecify) {
 	 		super(name, description, label, mustSpecify);
@@ -163,7 +165,8 @@ public abstract class ConnectorImpl implements Connector {
 	}
 	
 	public class IntegerArgumentImpl extends ArgumentImpl implements com.sun.jdi.connect.Connector.IntegerArgument {
-		private Integer fValue;
+        private static final long serialVersionUID = 6009335074727417445L;
+        private Integer fValue;
 		private int fMin;
 		private int fMax;
 
@@ -221,7 +224,8 @@ public abstract class ConnectorImpl implements Connector {
 	}
 	
 	public class BooleanArgumentImpl extends ArgumentImpl implements com.sun.jdi.connect.Connector.BooleanArgument {
-		private Boolean fValue;
+	    private static final long serialVersionUID = 6009335074727417445L;
+        private Boolean fValue;
 		
 	 	protected BooleanArgumentImpl(String name, String description, String label, boolean mustSpecify) {
 	 		super(name, description, label, mustSpecify);
@@ -257,7 +261,8 @@ public abstract class ConnectorImpl implements Connector {
 	}
 	
 	public class SelectedArgumentImpl extends StringArgumentImpl implements com.sun.jdi.connect.Connector.SelectedArgument {
-		private List fChoices;
+        private static final long serialVersionUID = 6009335074727417445L;
+        private List fChoices;
 		
 	 	protected SelectedArgumentImpl(String name, String description, String label, boolean mustSpecify, List choices) {
 	 		super(name, description, label, mustSpecify);
