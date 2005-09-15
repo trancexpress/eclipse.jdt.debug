@@ -11,9 +11,8 @@
 package org.eclipse.jdt.internal.debug.ui.monitors;
 
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.debug.internal.ui.elements.adapters.AbstractAsyncPresentationAdapter;
-import org.eclipse.debug.internal.ui.treeviewer.IAsynchronousLabelAdapter;
-import org.eclipse.debug.internal.ui.treeviewer.IAsynchronousTreeContentAdapter;
+import org.eclipse.debug.ui.viewers.IAsynchronousLabelAdapter;
+import org.eclipse.debug.ui.viewers.IAsynchronousTreeContentAdapter;
 import org.eclipse.jdt.debug.core.IJavaThread;
 
 /**
@@ -22,11 +21,11 @@ import org.eclipse.jdt.debug.core.IJavaThread;
  */
 public class JavaDebugElementAdapterFactory implements IAdapterFactory {
     
-    private static AbstractAsyncPresentationAdapter fgThreadAdapter;
-    private static AbstractAsyncPresentationAdapter fgContendedMonitorAdapter;
-    private static AbstractAsyncPresentationAdapter fgOwnedMonitorAdapter;
-    private static AbstractAsyncPresentationAdapter fgOwningThreadAdapter;
-    private static AbstractAsyncPresentationAdapter fgWaitingThreadAdapter;
+    private static IAsynchronousTreeContentAdapter fgThreadAdapter;
+    private static IAsynchronousTreeContentAdapter fgContendedMonitorAdapter;
+    private static IAsynchronousTreeContentAdapter fgOwnedMonitorAdapter;
+    private static IAsynchronousTreeContentAdapter fgOwningThreadAdapter;
+    private static IAsynchronousTreeContentAdapter fgWaitingThreadAdapter;
     
     /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
@@ -64,14 +63,14 @@ public class JavaDebugElementAdapterFactory implements IAdapterFactory {
         return fgOwningThreadAdapter;
     }
 
-    private AbstractAsyncPresentationAdapter getOwnedMonitorAdapater() {
+    private IAsynchronousTreeContentAdapter getOwnedMonitorAdapater() {
         if (fgOwnedMonitorAdapter == null) {
             fgOwnedMonitorAdapter = new AsyncJavaOwnedMonitorAdapter();
         }
         return fgOwnedMonitorAdapter;
     }
 
-    private AbstractAsyncPresentationAdapter getContendedMonitorAdapter() {
+    private IAsynchronousTreeContentAdapter getContendedMonitorAdapter() {
         if (fgContendedMonitorAdapter == null) {
             fgContendedMonitorAdapter = new AsyncJavaContendedMonitorAdapter();
         }
@@ -85,7 +84,7 @@ public class JavaDebugElementAdapterFactory implements IAdapterFactory {
         return new Class[] {IAsynchronousLabelAdapter.class, IAsynchronousTreeContentAdapter.class};
     }
 	
-	private AbstractAsyncPresentationAdapter getThreadAdapter() {
+	private IAsynchronousTreeContentAdapter getThreadAdapter() {
 	    if (fgThreadAdapter == null) {
 	        fgThreadAdapter = new AsyncJavaThreadAdapter();
 	    }

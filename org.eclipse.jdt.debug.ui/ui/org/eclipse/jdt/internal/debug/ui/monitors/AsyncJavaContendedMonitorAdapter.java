@@ -1,7 +1,7 @@
 package org.eclipse.jdt.internal.debug.ui.monitors;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.internal.ui.treeviewer.IPresentationContext;
+import org.eclipse.debug.ui.viewers.IPresentationContext;
 
 public class AsyncJavaContendedMonitorAdapter extends AsyncMonitorAdapter {
 

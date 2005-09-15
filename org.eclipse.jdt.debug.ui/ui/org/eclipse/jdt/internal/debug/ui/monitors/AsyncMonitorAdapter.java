@@ -1,13 +1,13 @@
 package org.eclipse.jdt.internal.debug.ui.monitors;
 
-import org.eclipse.debug.internal.ui.elements.adapters.AbstractAsyncPresentationAdapter;
+import org.eclipse.debug.ui.viewers.AsynchronousTreeContentAdapter;
 import org.eclipse.jdt.internal.debug.ui.IJDIPreferencesConstants;
 import org.eclipse.jdt.internal.debug.ui.JDIDebugUIPlugin;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
-public abstract class AsyncMonitorAdapter extends AbstractAsyncPresentationAdapter implements IPropertyChangeListener {
+public abstract class AsyncMonitorAdapter extends AsynchronousTreeContentAdapter implements IPropertyChangeListener {
 
 	private boolean fDisplayMonitors;
 
