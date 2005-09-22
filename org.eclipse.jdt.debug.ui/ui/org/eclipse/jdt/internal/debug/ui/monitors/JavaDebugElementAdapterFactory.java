@@ -11,7 +11,6 @@
 package org.eclipse.jdt.internal.debug.ui.monitors;
 
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.debug.ui.viewers.IAsynchronousLabelAdapter;
 import org.eclipse.debug.ui.viewers.IAsynchronousTreeContentAdapter;
 import org.eclipse.jdt.debug.core.IJavaThread;
 
@@ -81,7 +80,7 @@ public class JavaDebugElementAdapterFactory implements IAdapterFactory {
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
      */
     public Class[] getAdapterList() {
-        return new Class[] {IAsynchronousLabelAdapter.class, IAsynchronousTreeContentAdapter.class};
+        return new Class[] {IAsynchronousTreeContentAdapter.class};
     }
 	
 	private IAsynchronousTreeContentAdapter getThreadAdapter() {
