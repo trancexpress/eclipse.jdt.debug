@@ -1,5 +1,6 @@
 package org.eclipse.jdt.internal.debug.ui.monitors;
 
+import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.debug.ui.viewers.AsynchronousTreeContentAdapter;
 import org.eclipse.jdt.internal.debug.ui.IJDIPreferencesConstants;
 import org.eclipse.jdt.internal.debug.ui.JDIDebugUIPlugin;
@@ -26,4 +27,11 @@ public abstract class AsyncMonitorAdapter extends AsynchronousTreeContentAdapter
 	protected boolean isDisplayMonitors() {
 	    return fDisplayMonitors;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.ui.viewers.AsynchronousTreeContentAdapter#supportsPartId(java.lang.String)
+	 */
+	protected boolean supportsPartId(String id) {
+		return IDebugUIConstants.ID_DEBUG_VIEW.equals(id);
+	}	
 }
