@@ -1,7 +1,7 @@
 package org.eclipse.jdt.internal.debug.ui.monitors;
 
+import org.eclipse.debug.internal.ui.viewers.AsynchronousTreeContentAdapter;
 import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.debug.ui.viewers.AsynchronousTreeContentAdapter;
 import org.eclipse.jdt.internal.debug.ui.IJDIPreferencesConstants;
 import org.eclipse.jdt.internal.debug.ui.JDIDebugUIPlugin;
 import org.eclipse.jface.preference.IPreferenceStore;

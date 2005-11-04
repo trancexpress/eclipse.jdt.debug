@@ -11,7 +11,7 @@
 package org.eclipse.jdt.internal.debug.ui.monitors;
 
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.debug.ui.viewers.IAsynchronousTreeContentAdapter;
+import org.eclipse.debug.internal.ui.viewers.IAsynchronousTreeContentAdapter;
 import org.eclipse.jdt.debug.core.IJavaThread;
 
 /**
