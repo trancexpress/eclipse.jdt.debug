@@ -11,6 +11,7 @@
 package org.eclipse.jdt.internal.debug.ui.threadgroups;
 
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.debug.internal.ui.model.IElementContentProvider;
 import org.eclipse.debug.internal.ui.viewers.provisional.IAsynchronousContentAdapter;
 import org.eclipse.debug.internal.ui.viewers.provisional.IAsynchronousLabelAdapter;
 import org.eclipse.debug.internal.ui.viewers.provisional.IModelProxyFactoryAdapter;
@@ -32,6 +33,9 @@ public class JavaDebugElementLabelAdapterFactory implements IAdapterFactory{
 	private static IModelProxyFactoryAdapter fgJavaModelProxyFactory = new JavaModelProxyFactory();
 	private static IAsynchronousLabelAdapter fgObjectLabelAdapter = new ObjectLabelAdapter();
 	private static IAsynchronousContentAdapter fgObjectContentAdapter = new ObjectReferencesContentAdapter();
+	
+	private static IElementContentProvider fgTargetPresentation = new JavaDebugTargetContentProvider();
+	private static IElementContentProvider fgThreadGroupPresentation = new JavaThreadGroupContentProvider();
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
@@ -61,6 +65,14 @@ public class JavaDebugElementLabelAdapterFactory implements IAdapterFactory{
 				return fgJavaModelProxyFactory;
 			}
 		}
+		if (adapterType.equals(IElementContentProvider.class)) {
+			if (adaptableObject instanceof IJavaDebugTarget) {
+				return fgTargetPresentation;
+			}
+			if (adaptableObject instanceof IJavaThreadGroup) {
+				return fgThreadGroupPresentation;
+			}
+		}
 		return null;
 	}
 
@@ -68,7 +80,8 @@ public class JavaDebugElementLabelAdapterFactory implements IAdapterFactory{
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
 	 */
 	public Class[] getAdapterList() {
-		return new Class[]{IAsynchronousLabelAdapter.class, IAsynchronousContentAdapter.class, IModelProxyFactoryAdapter.class};
+		return new Class[]{IAsynchronousLabelAdapter.class, IAsynchronousContentAdapter.class, IModelProxyFactoryAdapter.class,
+				IElementContentProvider.class};
 	}
 
 }

@@ -11,16 +11,18 @@
 package org.eclipse.jdt.internal.debug.ui.monitors;
 
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.debug.internal.ui.model.IElementContentProvider;
 import org.eclipse.debug.internal.ui.viewers.provisional.IAsynchronousContentAdapter;
 import org.eclipse.jdt.debug.core.IJavaThread;
 
 /**
  * Adapter factory that generates workbench adapters for java debug elements to
- * provide thread monitor information in the debug veiw.
+ * provide thread monitor information in the debug view.
  */
 public class JavaDebugElementAdapterFactory implements IAdapterFactory {
     
     private static IAsynchronousContentAdapter fgThreadAdapter;
+    private static IElementContentProvider fgThreadPresentation;
     private static IAsynchronousContentAdapter fgContendedMonitorAdapter;
     private static IAsynchronousContentAdapter fgOwnedMonitorAdapter;
     private static IAsynchronousContentAdapter fgOwningThreadAdapter;
@@ -30,21 +32,28 @@ public class JavaDebugElementAdapterFactory implements IAdapterFactory {
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
      */
     public Object getAdapter(Object adaptableObject, Class adapterType) {
-        if (adaptableObject instanceof IJavaThread) {
-            return getThreadAdapter();
-        }
-        if (adaptableObject instanceof JavaContendedMonitor) {
-            return getContendedMonitorAdapter();
-        }
-        if (adaptableObject instanceof JavaOwnedMonitor) {
-            return getOwnedMonitorAdapater();
-        }
-        if (adaptableObject instanceof JavaOwningThread) {
-            return getOwningThreadAdapter();
-        }
-        if (adaptableObject instanceof JavaWaitingThread) {
-            return getWaitingThreadAdapter();
-        }
+    	if (IAsynchronousContentAdapter.class.equals(adapterType)) {
+	        if (adaptableObject instanceof IJavaThread) {
+	        	return getThreadAdapter();
+	        }
+	        if (adaptableObject instanceof JavaContendedMonitor) {
+	            return getContendedMonitorAdapter();
+	        }
+	        if (adaptableObject instanceof JavaOwnedMonitor) {
+	            return getOwnedMonitorAdapater();
+	        }
+	        if (adaptableObject instanceof JavaOwningThread) {
+	            return getOwningThreadAdapter();
+	        }
+	        if (adaptableObject instanceof JavaWaitingThread) {
+	            return getWaitingThreadAdapter();
+	        }
+    	}
+    	if (IElementContentProvider.class.equals(adapterType)) {
+    		if (adaptableObject instanceof IJavaThread) {
+	        	return getThreadPresentation();
+	        }
+    	}
         return null;
     }
 
@@ -80,7 +89,7 @@ public class JavaDebugElementAdapterFactory implements IAdapterFactory {
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
      */
     public Class[] getAdapterList() {
-        return new Class[] {IAsynchronousContentAdapter.class};
+        return new Class[] {IAsynchronousContentAdapter.class, IElementContentProvider.class};
     }
 	
 	private IAsynchronousContentAdapter getThreadAdapter() {
@@ -88,5 +97,12 @@ public class JavaDebugElementAdapterFactory implements IAdapterFactory {
 	        fgThreadAdapter = new AsyncJavaThreadAdapter();
 	    }
 	    return fgThreadAdapter;
+	}
+
+	private IElementContentProvider getThreadPresentation() {
+		if (fgThreadPresentation == null) {
+			fgThreadPresentation = new JavaThreadContentProvider();
+		}
+		return fgThreadPresentation;
 	}
 }
