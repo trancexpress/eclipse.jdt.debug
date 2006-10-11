@@ -55,7 +55,7 @@ public abstract class JavaElementContentProvider extends ElementContentProvider 
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.eclipse.debug.internal.ui.model.elements.ElementContentProvider#supportsContextId(java.lang.String)
+	 * @see org.eclipse.debug.internal.ui.viewers.model.provisional.elements.ElementContentProvider#supportsContextId(java.lang.String)
 	 */
 	protected boolean supportsContextId(String id) {
 		return IDebugUIConstants.ID_DEBUG_VIEW.equals(id);

@@ -12,7 +12,7 @@ package org.eclipse.jdt.internal.debug.ui.threadgroups;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.model.IDebugTarget;
-import org.eclipse.debug.internal.ui.viewers.provisional.IPresentationContext;
+import org.eclipse.debug.internal.ui.viewers.model.provisional.IPresentationContext;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaThreadGroup;
 import org.eclipse.jdt.internal.debug.ui.monitors.JavaElementContentProvider;
@@ -23,7 +23,7 @@ import org.eclipse.jdt.internal.debug.ui.monitors.JavaElementContentProvider;
 public class JavaThreadGroupContentProvider extends JavaElementContentProvider {
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.debug.internal.ui.model.elements.ElementContentProvider#getChildCount(java.lang.Object, org.eclipse.debug.internal.ui.viewers.provisional.IPresentationContext)
+	 * @see org.eclipse.debug.internal.ui.viewers.model.provisional.elements.ElementContentProvider#getChildCount(java.lang.Object, org.eclipse.debug.internal.ui.viewers.provisional.IPresentationContext)
 	 */
 	protected int getChildCount(Object element, IPresentationContext context) throws CoreException {
 		int count = 0;
@@ -38,7 +38,7 @@ public class JavaThreadGroupContentProvider extends JavaElementContentProvider {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.debug.internal.ui.model.elements.ElementContentProvider#getChildren(java.lang.Object, int, int, org.eclipse.debug.internal.ui.viewers.provisional.IPresentationContext)
+	 * @see org.eclipse.debug.internal.ui.viewers.model.provisional.elements.ElementContentProvider#getChildren(java.lang.Object, int, int, org.eclipse.debug.internal.ui.viewers.provisional.IPresentationContext)
 	 */
 	protected Object[] getChildren(Object parent, int index, int length, IPresentationContext context) throws CoreException {
 		if (parent instanceof IJavaThreadGroup) {
