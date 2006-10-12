@@ -13,7 +13,9 @@ package org.eclipse.jdt.internal.debug.ui.monitors;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.debug.internal.ui.viewers.model.provisional.IElementContentProvider;
 import org.eclipse.debug.internal.ui.viewers.provisional.IAsynchronousContentAdapter;
+import org.eclipse.jdt.debug.core.IJavaStackFrame;
 import org.eclipse.jdt.debug.core.IJavaThread;
+import org.eclipse.jdt.internal.debug.ui.variables.JavaStackFrameContentProvider;
 
 /**
  * Adapter factory that generates workbench adapters for java debug elements to
@@ -22,11 +24,13 @@ import org.eclipse.jdt.debug.core.IJavaThread;
 public class JavaDebugElementAdapterFactory implements IAdapterFactory {
     
     private static IAsynchronousContentAdapter fgThreadAdapter;
-    private static IElementContentProvider fgThreadPresentation;
     private static IAsynchronousContentAdapter fgContendedMonitorAdapter;
     private static IAsynchronousContentAdapter fgOwnedMonitorAdapter;
     private static IAsynchronousContentAdapter fgOwningThreadAdapter;
     private static IAsynchronousContentAdapter fgWaitingThreadAdapter;
+    
+    private static IElementContentProvider fgCPThread;
+    private static IElementContentProvider fgCPFrame = new JavaStackFrameContentProvider();
     
     /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
@@ -53,6 +57,9 @@ public class JavaDebugElementAdapterFactory implements IAdapterFactory {
     		if (adaptableObject instanceof IJavaThread) {
 	        	return getThreadPresentation();
 	        }
+    		if (adaptableObject instanceof IJavaStackFrame) {
+    			return fgCPFrame;
+    		}
     	}
         return null;
     }
@@ -100,9 +107,9 @@ public class JavaDebugElementAdapterFactory implements IAdapterFactory {
 	}
 
 	private IElementContentProvider getThreadPresentation() {
-		if (fgThreadPresentation == null) {
-			fgThreadPresentation = new JavaThreadContentProvider();
+		if (fgCPThread == null) {
+			fgCPThread = new JavaThreadContentProvider();
 		}
-		return fgThreadPresentation;
+		return fgCPThread;
 	}
 }

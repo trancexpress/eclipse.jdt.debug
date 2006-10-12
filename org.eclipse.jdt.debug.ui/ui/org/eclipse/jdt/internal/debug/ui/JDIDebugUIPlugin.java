@@ -351,6 +351,7 @@ public class JDIDebugUIPlugin extends AbstractUIPlugin {
         manager.registerAdapters(monitorFactory, JavaOwnedMonitor.class);
         manager.registerAdapters(monitorFactory, JavaOwningThread.class);
         manager.registerAdapters(monitorFactory, JavaWaitingThread.class);
+        manager.registerAdapters(monitorFactory, IJavaStackFrame.class);
         IAdapterFactory labelFactory = new JavaDebugElementLabelAdapterFactory();
         manager.registerAdapters(labelFactory, IJavaThreadGroup.class);
         manager.registerAdapters(labelFactory, IJavaDebugTarget.class);
