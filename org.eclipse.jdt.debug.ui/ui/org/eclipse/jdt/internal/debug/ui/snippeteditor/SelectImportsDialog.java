@@ -11,9 +11,9 @@
 package org.eclipse.jdt.internal.debug.ui.snippeteditor;
 
  
-import com.ibm.icu.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -23,7 +23,7 @@ import org.eclipse.jdt.core.search.SearchEngine;
 import org.eclipse.jdt.internal.debug.ui.ExceptionHandler;
 import org.eclipse.jdt.internal.debug.ui.Filter;
 import org.eclipse.jdt.internal.debug.ui.FilterLabelProvider;
-import org.eclipse.jdt.internal.debug.ui.FilterViewerSorter;
+import org.eclipse.jdt.internal.debug.ui.FilterViewerComparator;
 import org.eclipse.jdt.internal.debug.ui.IJavaDebugHelpContextIds;
 import org.eclipse.jdt.internal.debug.ui.JDIDebugUIPlugin;
 import org.eclipse.jdt.internal.ui.util.SWTUtil;
@@ -56,6 +56,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.SelectionDialog;
+
+import com.ibm.icu.text.MessageFormat;
 
 public class SelectImportsDialog extends TitleAreaDialog {
 
@@ -308,7 +310,7 @@ public class SelectImportsDialog extends TitleAreaDialog {
 
 		fImportsViewer = new TableViewer(fImportsTable);
 		fImportsViewer.setLabelProvider(new FilterLabelProvider());
-		fImportsViewer.setSorter(new FilterViewerSorter());
+		fImportsViewer.setComparator(new FilterViewerComparator());
 		fImportContentProvider = new ImportsContentProvider(fImportsViewer);
 		fImportsViewer.setContentProvider(fImportContentProvider);
 		// input just needs to be non-null

@@ -98,6 +98,15 @@ public class JavaSourceLookupTab extends JavaLaunchTab {
 	}
 
 	/**
+	 * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getTabId()
+	 * 
+	 * @since 3.3
+	 */
+	public String getTabId() {
+		return "org.eclipse.jdt.debug.ui.javaSourceLookupTab"; //$NON-NLS-1$
+	}
+	
+	/**
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName()
 	 */
 	public String getName() {
