@@ -35,7 +35,6 @@ public class JavaDebugElementLabelAdapterFactory implements IAdapterFactory{
 	private static IAsynchronousContentAdapter fgObjectContentAdapter = new ObjectReferencesContentAdapter();
 	
 	private static IElementContentProvider fgTargetPresentation = new JavaDebugTargetContentProvider();
-	private static IElementContentProvider fgThreadGroupPresentation = new JavaThreadGroupContentProvider();
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
@@ -68,9 +67,6 @@ public class JavaDebugElementLabelAdapterFactory implements IAdapterFactory{
 		if (adapterType.equals(IElementContentProvider.class)) {
 			if (adaptableObject instanceof IJavaDebugTarget) {
 				return fgTargetPresentation;
-			}
-			if (adaptableObject instanceof IJavaThreadGroup) {
-				return fgThreadGroupPresentation;
 			}
 		}
 		return null;

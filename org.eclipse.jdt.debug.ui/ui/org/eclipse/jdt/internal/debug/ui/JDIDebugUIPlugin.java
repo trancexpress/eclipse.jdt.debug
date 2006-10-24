@@ -61,6 +61,7 @@ import org.eclipse.jdt.internal.debug.ui.monitors.JavaWaitingThread;
 import org.eclipse.jdt.internal.debug.ui.snippeteditor.SnippetFileDocumentProvider;
 import org.eclipse.jdt.internal.debug.ui.sourcelookup.JavaDebugShowInAdapterFactory;
 import org.eclipse.jdt.internal.debug.ui.threadgroups.JavaDebugElementLabelAdapterFactory;
+import org.eclipse.jdt.internal.debug.ui.threadgroups.ThreadGroupAdapterFactory;
 import org.eclipse.jdt.internal.debug.ui.variables.ColumnPresentationAdapterFactory;
 import org.eclipse.jdt.internal.debug.ui.variables.JavaVariableAdapterFactory;
 import org.eclipse.jdt.internal.launching.DefaultProjectClasspathEntry;
@@ -353,9 +354,11 @@ public class JDIDebugUIPlugin extends AbstractUIPlugin {
         manager.registerAdapters(monitorFactory, JavaWaitingThread.class);
         manager.registerAdapters(monitorFactory, IJavaStackFrame.class);
         IAdapterFactory labelFactory = new JavaDebugElementLabelAdapterFactory();
-        manager.registerAdapters(labelFactory, IJavaThreadGroup.class);
         manager.registerAdapters(labelFactory, IJavaDebugTarget.class);
         manager.registerAdapters(labelFactory, IJavaObject.class);
+        
+        IAdapterFactory groupFactory = new ThreadGroupAdapterFactory();
+        manager.registerAdapters(groupFactory, IJavaThreadGroup.class);
         
         IAdapterFactory showInFactory = new JavaDebugShowInAdapterFactory();
         manager.registerAdapters(showInFactory, IJavaStackFrame.class);
