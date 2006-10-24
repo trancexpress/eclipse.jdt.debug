@@ -100,4 +100,14 @@ public class JavaThreadContentProvider extends JavaElementContentProvider {
 		}		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.internal.ui.model.elements.ElementContentProvider#hasChildren(java.lang.Object, org.eclipse.debug.internal.ui.viewers.model.provisional.IPresentationContext, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	protected boolean hasChildren(Object element, IPresentationContext context, IProgressMonitor monitor) throws CoreException {
+		return ((IJavaThread)element).hasStackFrames() ||
+			(isDisplayMonitors() && ((IJavaThread)element).hasOwnedMonitors());
+	}
+	
+	
+
 }
