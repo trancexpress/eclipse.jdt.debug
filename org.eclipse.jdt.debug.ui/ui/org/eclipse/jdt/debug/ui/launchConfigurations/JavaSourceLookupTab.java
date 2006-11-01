@@ -12,6 +12,7 @@ package org.eclipse.jdt.debug.ui.launchConfigurations;
 
 
 import java.util.List;
+
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.debug.ui.JavaUISourceLocator;
@@ -98,11 +99,11 @@ public class JavaSourceLookupTab extends JavaLaunchTab {
 	}
 
 	/**
-	 * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getTabId()
+	 * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getId()
 	 * 
 	 * @since 3.3
 	 */
-	public String getTabId() {
+	public String getId() {
 		return "org.eclipse.jdt.debug.ui.javaSourceLookupTab"; //$NON-NLS-1$
 	}
 	

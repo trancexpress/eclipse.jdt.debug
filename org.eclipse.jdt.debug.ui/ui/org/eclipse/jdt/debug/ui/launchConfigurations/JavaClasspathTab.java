@@ -12,7 +12,6 @@
 package org.eclipse.jdt.debug.ui.launchConfigurations;
 
 
-import com.ibm.icu.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +63,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
+
+import com.ibm.icu.text.MessageFormat;
 
 /**
  * A launch configuration tab that displays and edits the user and
@@ -370,11 +371,11 @@ public class JavaClasspathTab extends AbstractJavaClasspathTab {
 	}
 	
 	/**
-	 * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getTabId()
+	 * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getId()
 	 * 
 	 * @since 3.3
 	 */
-	public String getTabId() {
+	public String getId() {
 		return "org.eclipse.jdt.debug.ui.javaClasspathTab"; //$NON-NLS-1$
 	}
 	
