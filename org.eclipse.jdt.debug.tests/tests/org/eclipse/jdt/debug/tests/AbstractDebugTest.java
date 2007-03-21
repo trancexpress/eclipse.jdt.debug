@@ -366,6 +366,28 @@ public abstract class AbstractDebugTest extends TestCase implements  IEvaluation
 		assertNotNull("Could not locate launch configuration for " + mainTypeName, config);
 		return launchAndTerminate(config, DEFAULT_TIMEOUT);
 	}
+	
+	/**
+	 * Launches the given configuration in debug mode, and waits for a terminate
+	 * event in that program. Returns the debug target in which the terminate
+	 * event occurred.
+	 * 
+	 * @param config the configuration to launch
+	 * @param timeout the number of milliseconds to wait for a terminate event
+	 * @param register whether to register the launch
+	 * @return thread in which the first suspend event occurred
+	 */	
+	protected IJavaDebugTarget launchAndTerminate(ILaunchConfiguration config, int timeout, boolean register) throws Exception {
+		DebugEventWaiter waiter= new DebugElementKindEventWaiter(DebugEvent.TERMINATE, IJavaDebugTarget.class);
+		waiter.setTimeout(timeout);
+
+		Object terminatee = launchAndWait(config, waiter, register);		
+		assertNotNull("Program did not terminate.", terminatee);
+		assertTrue("terminatee is not an IJavaDebugTarget", terminatee instanceof IJavaDebugTarget);
+		IJavaDebugTarget debugTarget = (IJavaDebugTarget) terminatee;
+		assertTrue("debug target is not terminated", debugTarget.isTerminated() || debugTarget.isDisconnected());
+		return debugTarget;		
+	}	
 
 	/**
 	 * Launches the given configuration in debug mode, and waits for a terminate
@@ -377,15 +399,7 @@ public abstract class AbstractDebugTest extends TestCase implements  IEvaluation
 	 * @return thread in which the first suspend event occurred
 	 */	
 	protected IJavaDebugTarget launchAndTerminate(ILaunchConfiguration config, int timeout) throws Exception {
-		DebugEventWaiter waiter= new DebugElementKindEventWaiter(DebugEvent.TERMINATE, IJavaDebugTarget.class);
-		waiter.setTimeout(timeout);
-
-		Object terminatee = launchAndWait(config, waiter);		
-		assertNotNull("Program did not terminate.", terminatee);
-		assertTrue("terminatee is not an IJavaDebugTarget", terminatee instanceof IJavaDebugTarget);
-		IJavaDebugTarget debugTarget = (IJavaDebugTarget) terminatee;
-		assertTrue("debug target is not terminated", debugTarget.isTerminated() || debugTarget.isDisconnected());
-		return debugTarget;		
+		return launchAndTerminate(config, timeout, true);	
 	}
 	
 	/**

@@ -70,7 +70,7 @@ public class PerfConditionalBreakpointsTests extends AbstractDebugPerformanceTes
         DebugPlugin.getDefault().addDebugEventListener(listener);
         ILaunchConfiguration config = getLaunchConfiguration(fTypeName);
         try {
-            fTarget = launchAndTerminate(config, 5 * 60 * 1000);
+            fTarget = launchAndTerminate(config, 5 * 60 * 1000, false);
 
             if (fException != null) {
                 throw fException;
