@@ -23,6 +23,8 @@ import java.util.PropertyResourceBundle;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.jdi.internal.connect.SACoreAttachingConnectorImpl;
+import org.eclipse.jdi.internal.connect.SACoreDebugServerAttachingConnectorImpl;
 import org.eclipse.jdi.internal.connect.SocketAttachingConnectorImpl;
 import org.eclipse.jdi.internal.connect.SocketLaunchingConnectorImpl;
 import org.eclipse.jdi.internal.connect.SocketListeningConnectorImpl;
@@ -190,6 +192,8 @@ public class VirtualMachineManagerImpl implements VirtualMachineManager {
 	public List<AttachingConnector> attachingConnectors() {
 		ArrayList<AttachingConnector> list = new ArrayList<AttachingConnector>(1);
 		list.add(new SocketAttachingConnectorImpl(this));
+		list.add(new SACoreAttachingConnectorImpl(this));
+		list.add(new SACoreDebugServerAttachingConnectorImpl(this));
 		return list;
 	}
 

@@ -54,6 +54,19 @@ public interface IJavaLaunchConfigurationConstants {
 	 * @since 3.4
 	 */
 	public static final String ID_SOCKET_LISTEN_VM_CONNECTOR = LaunchingPlugin.getUniqueIdentifier() + ".socketListenConnector"; //$NON-NLS-1$
+	/**
+	 * Identifier for the standard local SA attaching connector
+	 * (value <code>"org.eclipse.jdt.launching.SACoreAttachingConnector"</code>).
+	 * @since 3.6
+	 */
+	public static final String ID_SA_ATTACH_VM_CONNECTOR = LaunchingPlugin.getUniqueIdentifier() + ".SACoreAttachingConnector"; //$NON-NLS-1$
+	
+	/**
+	 * Identifier for the standard SA dbeug server attaching connector
+	 * (value <code>"org.eclipse.jdt.launching.SACoreDebugServerAttachingConnector"</code>).
+	 * @since 3.6
+	 */
+	public static final String ID_SA_DEBUG_SERVER_ATTACH_VM_CONNECTOR = LaunchingPlugin.getUniqueIdentifier() + ".SACoreDebugServerAttachingConnector"; //$NON-NLS-1$
 	
 	/**
 	 * Identifier for the java process type, which is annotated on processes created
@@ -486,7 +499,20 @@ public interface IJavaLaunchConfigurationConstants {
 	 * 
 	 * @since 3.0
 	 */
-	public static final int ERR_PROJECT_CLOSED = 124;			
+	public static final int ERR_PROJECT_CLOSED = 124;	
+	
+	/**
+	 * Status code indicating that the path to the core dump file was not given
+	 * 
+	 * @since 3.6
+	 */
+	public static final int ERR_UNSPECIFIED_CORE_FILE = 125;
+	/**
+	 * Status code indicating that the Java executable path was not given
+	 * 
+	 * @since 3.6
+	 */
+	public static final int ERR_UNSPECIFIED_JAVA_EXECUTABLE_PATH = 126;
 
 	/**
 	 * Status code indicating an unexpected internal error.

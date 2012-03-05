@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2011 IBM Corporation and others.
+ * Copyright (c) 2007, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,19 +38,22 @@ import com.sun.jdi.connect.ListeningConnector;
  * @see SocketListenConnectorProcess
  */
 public class SocketListenConnector implements IVMConnector {
-		
+	
+	public static final String JDI_CONNECTOR_ID = "com.sun.jdi.SocketListen"; //$NON-NLS-1$
+	public static final String PORT = "port"; //$NON-NLS-1$
+
 	/**
 	 * Return the socket transport listening connector
 	 * 
 	 * @return the new {@link ListeningConnector}
 	 * @exception CoreException if unable to locate the connector
 	 */
-	protected static ListeningConnector getListeningConnector() throws CoreException {
+	protected ListeningConnector getListeningConnector() throws CoreException {
 		ListeningConnector connector= null;
 		Iterator<ListeningConnector> iter= Bootstrap.virtualMachineManager().listeningConnectors().iterator();
 		while (iter.hasNext()) {
 			ListeningConnector lc= iter.next();
-			if (lc.name().equals("com.sun.jdi.SocketListen")) { //$NON-NLS-1$
+			if (lc.name().equals(JDI_CONNECTOR_ID)) {
 				connector= lc;
 				break;
 			}
@@ -87,14 +90,14 @@ public class SocketListenConnector implements IVMConnector {
 		
 		ListeningConnector connector= getListeningConnector();
 		
-		String portNumberString = arguments.get("port"); //$NON-NLS-1$
+		String portNumberString = arguments.get(PORT); 
 		if (portNumberString == null) {
 			abort(LaunchingMessages.SocketAttachConnector_Port_unspecified_for_remote_connection__2, null, IJavaLaunchConfigurationConstants.ERR_UNSPECIFIED_PORT); 
 		}
 	
 		Map<String, Connector.Argument> acceptArguments = connector.defaultArguments();
 		
-        Connector.Argument param= acceptArguments.get("port"); //$NON-NLS-1$
+        Connector.Argument param= acceptArguments.get(PORT); 
 		param.setValue(portNumberString);
         
 		try {
@@ -115,7 +118,7 @@ public class SocketListenConnector implements IVMConnector {
 	 */
 	public Map<String, Connector.Argument> getDefaultArguments() throws CoreException {
 		Map<String, Connector.Argument> def = getListeningConnector().defaultArguments();
-		Connector.IntegerArgument arg = (Connector.IntegerArgument)def.get("port"); //$NON-NLS-1$
+		Connector.IntegerArgument arg = (Connector.IntegerArgument)def.get(PORT); 
 		arg.setValue(8000);
 		return def;
 	}
@@ -125,7 +128,7 @@ public class SocketListenConnector implements IVMConnector {
 	 */
 	public List<String> getArgumentOrder() {
 		List<String> list = new ArrayList<String>(1);
-		list.add("port"); //$NON-NLS-1$
+		list.add(PORT); 
 		return list;
 	}
 
@@ -139,7 +142,7 @@ public class SocketListenConnector implements IVMConnector {
 	 * @param code error code
 	 * @throws CoreException if an error occurs
 	 */
-	protected static void abort(String message, Throwable exception, int code) throws CoreException {
+	protected void abort(String message, Throwable exception, int code) throws CoreException {
 		throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), code, message, exception));
 	}
 }

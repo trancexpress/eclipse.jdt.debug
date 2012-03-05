@@ -18,6 +18,28 @@ public class ConnectMessages extends NLS {
 	public static String PacketReceiveManager_Got_IOException_from_Virtual_Machine_1;
 	public static String PacketReceiveManager_Got_IOException_from_Virtual_Machine_2;
 	public static String PacketSendManager_Got_IOException_from_Virtual_Machine_1;
+	public static String SACoreAttachingConnectorImpl_0;
+
+	public static String SACoreAttachingConnectorImpl_1;
+
+	public static String SACoreAttachingConnectorImpl_2;
+
+	public static String SACoreAttachingConnectorImpl_3;
+
+	public static String SACoreAttachingConnectorImpl_4;
+
+	public static String SACoreDebugServerAttachingConnectorImpl_0;
+
+	public static String SACoreDebugServerAttachingConnectorImpl_1;
+
+	public static String SACoreDebugServerAttachingConnectorImpl_2;
+
+	public static String SACoreDebugServerAttachingConnectorImpl_3;
+
+	public static String SACoreDebugServerAttachingConnectorImpl_4;
+
+	public static String SACoreDebugServerAttachingConnectorImpl_5;
+
 	public static String SocketAttachingConnectorImpl_Machine_name_to_which_to_attach_for_VM_connections_1;
 	public static String SocketAttachingConnectorImpl_Host_2;
 	public static String SocketAttachingConnectorImpl_Port_number_to_which_to_attach_for_VM_connections_3;

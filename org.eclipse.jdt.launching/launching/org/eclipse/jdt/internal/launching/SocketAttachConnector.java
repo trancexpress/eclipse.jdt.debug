@@ -46,24 +46,28 @@ import com.sun.jdi.connect.IllegalConnectorArgumentsException;
  */
 public class SocketAttachConnector implements IVMConnector {
 		
+	public static final String TIMEOUT = "timeout"; //$NON-NLS-1$
+	public static final String HOSTNAME = "hostname"; //$NON-NLS-1$
+	public static final String JDI_CONNECTOR_ID = "com.sun.jdi.SocketAttach"; //$NON-NLS-1$
+
 	/**
 	 * Return the socket transport attaching connector
 	 * 
 	 * @return the {@link AttachingConnector}
 	 * @exception CoreException if unable to locate the connector
 	 */
-	protected static AttachingConnector getAttachingConnector() throws CoreException {
+	protected AttachingConnector getAttachingConnector() throws CoreException {
 		AttachingConnector connector= null;
 		Iterator<AttachingConnector> iter= Bootstrap.virtualMachineManager().attachingConnectors().iterator();
 		while (iter.hasNext()) {
 			AttachingConnector lc= iter.next();
-			if (lc.name().equals("com.sun.jdi.SocketAttach")) { //$NON-NLS-1$
+			if (lc.name().equals(JDI_CONNECTOR_ID)) {
 				connector= lc;
 				break;
 			}
 		}
 		if (connector == null) {
-			abort(LaunchingMessages.SocketAttachConnector_Socket_attaching_connector_not_available_3, null, IJavaLaunchConfigurationConstants.ERR_SHARED_MEMORY_CONNECTOR_UNAVAILABLE); 
+			abort(LaunchingMessages.SocketAttachConnector_Socket_attaching_connector_not_available_3, null, IJavaLaunchConfigurationConstants.ERR_SHARED_MEMORY_CONNECTOR_UNAVAILABLE);
 		}
 		return connector;
 	}
@@ -92,7 +96,7 @@ public class SocketAttachConnector implements IVMConnector {
 	 * @param code error code
 	 * @throws CoreException if an error occurs
 	 */
-	protected static void abort(String message, Throwable exception, int code) throws CoreException {
+	protected void abort(String message, Throwable exception, int code) throws CoreException {
 		throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), code, message, exception));
 	}		
 
@@ -109,24 +113,24 @@ public class SocketAttachConnector implements IVMConnector {
 		subMonitor.subTask(LaunchingMessages.SocketAttachConnector_Configuring_connection____1); 
 		
 		AttachingConnector connector= getAttachingConnector();
-		String portNumberString = arguments.get("port"); //$NON-NLS-1$
+		String portNumberString = arguments.get(SocketListenConnector.PORT);
 		if (portNumberString == null) {
 			abort(LaunchingMessages.SocketAttachConnector_Port_unspecified_for_remote_connection__2, null, IJavaLaunchConfigurationConstants.ERR_UNSPECIFIED_PORT); 
 		}
-		String host = arguments.get("hostname"); //$NON-NLS-1$
+		String host = arguments.get(HOSTNAME); 
 		if (host == null) {
 			abort(LaunchingMessages.SocketAttachConnector_Hostname_unspecified_for_remote_connection__4, null, IJavaLaunchConfigurationConstants.ERR_UNSPECIFIED_HOSTNAME); 
 		}
 		Map<String, Connector.Argument> map= connector.defaultArguments();
 		
-        Connector.Argument param= map.get("hostname"); //$NON-NLS-1$
+        Connector.Argument param= map.get(HOSTNAME); 
 		param.setValue(host);
-		param= map.get("port"); //$NON-NLS-1$
+		param= map.get(SocketListenConnector.PORT); 
 		param.setValue(portNumberString);
         
-        String timeoutString = arguments.get("timeout"); //$NON-NLS-1$
+        String timeoutString = arguments.get(TIMEOUT); 
         if (timeoutString != null) {
-            param= map.get("timeout"); //$NON-NLS-1$
+            param= map.get(TIMEOUT); 
             param.setValue(timeoutString);
         }
         
@@ -195,7 +199,7 @@ public class SocketAttachConnector implements IVMConnector {
 	 */
 	public Map<String, Connector.Argument> getDefaultArguments() throws CoreException {
 		Map<String, Connector.Argument> def = getAttachingConnector().defaultArguments();
-		Connector.IntegerArgument arg = (Connector.IntegerArgument)def.get("port"); //$NON-NLS-1$
+		Connector.IntegerArgument arg = (Connector.IntegerArgument)def.get(SocketListenConnector.PORT);
 		arg.setValue(8000);
 		return def;
 	}
@@ -205,8 +209,8 @@ public class SocketAttachConnector implements IVMConnector {
 	 */
 	public List<String> getArgumentOrder() {
 		List<String> list = new ArrayList<String>(2);
-		list.add("hostname"); //$NON-NLS-1$
-		list.add("port"); //$NON-NLS-1$
+		list.add(HOSTNAME); 
+		list.add(SocketListenConnector.PORT);
 		return list;
 	}
 }

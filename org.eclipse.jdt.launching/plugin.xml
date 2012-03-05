@@ -84,6 +84,7 @@
       </sourceLocator>
    </extension>
    <extension
+         id="sun.jvm.hotspot.jdi.SACoreAttachingConnector"
          point="org.eclipse.jdt.launching.vmConnectors">
       <vmConnector
             class="org.eclipse.jdt.internal.launching.SocketAttachConnector"
@@ -92,6 +93,14 @@
       <vmConnector
             class="org.eclipse.jdt.internal.launching.SocketListenConnector"
             id="org.eclipse.jdt.launching.socketListenConnector">
+      </vmConnector>
+      <vmConnector
+            class="org.eclipse.jdt.internal.launching.SACoreAttachingConnector"
+            id="org.eclipse.jdt.launching.SACoreAttachingConnector">
+      </vmConnector>
+      <vmConnector
+            class="org.eclipse.jdt.internal.launching.SACoreDebugServerAttachingConnector"
+            id="org.eclipse.jdt.launching.SACoreDebugServerAttachingConnector">
       </vmConnector>
    </extension>
    <extension

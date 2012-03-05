@@ -160,6 +160,13 @@ public class VirtualMachineImpl extends MirrorImpl implements VirtualMachine,
 	private PacketSendManager fPacketSendManager;
 
 	/**
+	 * Constructor
+	 */
+	public VirtualMachineImpl() {
+		super("RMI"); //$NON-NLS-1$
+	}
+	
+	/**
 	 * Creates a new Virtual Machine.
 	 */
 	public VirtualMachineImpl(Connection connection) {

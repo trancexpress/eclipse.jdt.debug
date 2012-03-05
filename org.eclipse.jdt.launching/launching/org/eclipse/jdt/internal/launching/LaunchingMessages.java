@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -87,6 +87,22 @@ public class LaunchingMessages extends NLS {
 	public static String LaunchingPlugin_38;
 
 	public static String libraryLocation_assert_libraryNotNull;
+
+	public static String SACoreAttachingConnector_0;
+
+	public static String SACoreAttachingConnector_1;
+
+	public static String SACoreAttachingConnector_2;
+
+	public static String SACoreAttachingConnector_3;
+
+	public static String SACoreAttachingConnector_4;
+
+	public static String SACoreRemoteAttachingConnector_0;
+
+	public static String SACoreRemoteAttachingConnector_1;
+
+	public static String SACoreRemoteAttachingConnector_2;
 
 	public static String SocketAttachConnector_Failed_to_connect_to_remote_VM_1;
 	public static String SocketAttachConnector_Socket_attaching_connector_not_available_3;
