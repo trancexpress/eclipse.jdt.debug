@@ -295,7 +295,15 @@ public class ThreadReferenceImpl extends ObjectReferenceImpl implements	ThreadRe
 		// Note that this information should not be cached.
 		initJdwpRequest();
 		try {
-			requestVM(JdwpCommandPacket.TR_INTERRUPT, this);
+			JdwpReplyPacket reply = requestVM(JdwpCommandPacket.TR_INTERRUPT, this);
+			switch (reply.errorCode()) {
+				case JdwpReplyPacket.INVALID_THREAD: {
+					throw new ObjectCollectedException();
+				}
+				default: {
+					defaultReplyErrorHandler(reply.errorCode());
+				}
+			}
 		} finally {
 			handledJdwpRequest();
 		}

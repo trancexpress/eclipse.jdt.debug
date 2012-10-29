@@ -356,6 +356,24 @@ public class JDIThread extends JDIDebugElement implements IJavaThread {
 	}
 
 	/**
+	 * Allows the thread and underlying {@link ThreadReference} to be interrupted
+	 * 
+	 * @throws DebugException
+	 * 
+	 * @since 3.6.200
+	 */
+	public void interrupt() throws DebugException {
+		if(fThread != null) {
+			try {
+				fThread.interrupt();
+			}
+			catch(RuntimeException rte) {
+				targetRequestFailed(rte.getMessage(), rte);
+			}
+		}
+	}
+	
+	/**
 	 * Adds the given breakpoint to the list of breakpoints this thread is
 	 * suspended at
 	 * 
