@@ -428,6 +428,25 @@
               style="push">
         </command>
        </menuContribution>
+       <menuContribution
+             locationURI="menu:org.eclipse.debug.ui.ExpressionView">
+          <menu
+                id="org.eclipse.jdt.debug.ui.expSubmenu"
+                label="%ExpressionViewJavaSubmenu.label">
+             <separator
+                   name="org.eclipse.jdt.debug.ui.javaPart">
+             </separator>
+             <command
+                   commandId="org.eclipse.jdt.debug.ui.ShowConstants"
+                   icon="$nl$/icons/full/elcl16/constant_co.gif"
+                   style="toggle">
+             </command>
+             <command
+                   commandId="org.eclipse.jdt.debug.ui.OpenJavaPreferences"
+                   style="push">
+             </command>
+          </menu>
+       </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -2699,6 +2718,22 @@ M4 = Platform-specific fourth key
             description="%OpenFromClipboardAction.description"
             id="org.eclipse.jdt.debug.ui.command.OpenFromClipboard"
             name="%OpenFromClipboardAction.name">
+      </command>
+      <command
+            categoryId="org.eclipse.debug.ui.category.run"
+            defaultHandler="org.eclipse.jdt.internal.debug.ui.commands.VariableOptionsHandler"
+            description="%variablePreferences.tooltip"
+            helpContextId="edit_variable_preferences"
+            id="org.eclipse.jdt.debug.ui.OpenJavaPreferences"
+            name="%variablePreferences.label">
+      </command>
+      <command
+            categoryId="org.eclipse.debug.ui.category.run"
+            defaultHandler="org.eclipse.jdt.internal.debug.ui.commands.ShowConstantsHandler"
+            description="%showConstantsAction.tooltip"
+            helpContextId="show_constants_action_context"
+            id="org.eclipse.jdt.debug.ui.ShowConstants"
+            name="%showConstantsAction.label">
       </command>
    </extension>
    <extension point="org.eclipse.ui.bindings">
