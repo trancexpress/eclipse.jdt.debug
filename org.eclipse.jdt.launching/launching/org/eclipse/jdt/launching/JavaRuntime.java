@@ -69,6 +69,7 @@ import org.eclipse.jdt.internal.launching.JREContainerInitializer;
 import org.eclipse.jdt.internal.launching.JavaSourceLookupUtil;
 import org.eclipse.jdt.internal.launching.LaunchingMessages;
 import org.eclipse.jdt.internal.launching.LaunchingPlugin;
+import org.eclipse.jdt.internal.launching.MacOSXVMInstallType;
 import org.eclipse.jdt.internal.launching.RuntimeClasspathEntry;
 import org.eclipse.jdt.internal.launching.RuntimeClasspathEntryResolver;
 import org.eclipse.jdt.internal.launching.RuntimeClasspathProvider;
@@ -347,10 +348,12 @@ public final class JavaRuntime {
 			MultiStatus status = new MultiStatus(LaunchingPlugin.getUniqueIdentifier(), IStatus.OK, "Exceptions occurred", null);  //$NON-NLS-1$
 			fgVMTypes = new HashSet<Object>();
 			for (int i= 0; i < configs.length; i++) {
-				try {
-					fgVMTypes.add(configs[i].createExecutableExtension("class")); //$NON-NLS-1$
+				if(acceptVMType(configs[i])) {
+					try {
+						fgVMTypes.add(configs[i].createExecutableExtension("class")); //$NON-NLS-1$
+					}
+					catch (CoreException e) {status.add(e.getStatus());}
 				}
-				catch (CoreException e) {status.add(e.getStatus());}
 			}
 			if (!status.isOK()) {
 				//only happens on a CoreException
@@ -362,6 +365,20 @@ public final class JavaRuntime {
 		}
 	}
 
+	/**
+	 * Returns if we should accept the {@link IConfigurationElement} or not - used to determine
+	 * if we should load certain VM install types at startup
+	 * @param element the element to check
+	 * @return <code>true</code> if we should load the VM install type, <code>false</code> otherwise
+	 * @since 3.7.0
+	 */
+	static boolean acceptVMType(IConfigurationElement element) {
+		if(!Platform.OS_MACOSX.equals(Platform.getOS()) && MacOSXVMInstallType.TYPE_ID.equals(element.getAttribute("id"))) { //$NON-NLS-1$
+			return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Returns the VM assigned to build the given Java project.
 	 * The project must exist. The VM assigned to a project is

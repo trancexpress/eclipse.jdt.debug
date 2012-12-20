@@ -230,4 +230,8 @@ public class LaunchingMessages extends NLS {
 
 	public static String AbstractVMInstall_4;
 
+	public static String MacOSXVMInstallType_macosx_default_vm_name;
+
+	public static String MacOSXVMInstallType_mmacosx_vm_type_name;
+
 }

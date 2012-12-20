@@ -12,12 +12,5 @@
 
 <plugin>
 
-     <extension
-         point="org.eclipse.jdt.launching.vmInstallTypes">
-      <vmInstallType
-            class="org.eclipse.jdt.internal.launching.macosx.MacOSXVMInstallType"
-            id="org.eclipse.jdt.internal.launching.macosx.MacOSXType">
-      </vmInstallType>
-   </extension>
 
 </plugin>

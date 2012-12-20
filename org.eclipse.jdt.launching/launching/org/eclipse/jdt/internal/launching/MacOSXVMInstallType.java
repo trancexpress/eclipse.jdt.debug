@@ -10,24 +10,17 @@
  *     Jeff Myers myersj@gmail.com - fix for #75201
  *     Ralf Ebert ralf@ralfebert.de - fix for #307109
  *******************************************************************************/
-package org.eclipse.jdt.internal.launching.macosx;
+package org.eclipse.jdt.internal.launching;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.internal.launching.LaunchingPlugin;
-import org.eclipse.jdt.internal.launching.LibraryInfo;
-import org.eclipse.jdt.internal.launching.MacInstalledJREs;
 import org.eclipse.jdt.internal.launching.MacInstalledJREs.JREDescriptor;
-import org.eclipse.jdt.internal.launching.StandardVMType;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -84,10 +77,18 @@ public class MacOSXVMInstallType extends StandardVMType {
 	private static final String JAVADOC_LOC= "/Developer/Documentation/Java/Reference/";	//$NON-NLS-1$
 	/** The doc for 1.4.1 is kept in a sub directory of the above. */ 
 	private static final String JAVADOC_SUBDIR= "/doc/api";	//$NON-NLS-1$
-				
+			
+	/**
+	 * Constant representing the id of the install type
+	 * <br><br>
+	 * Value is: <code>org.eclipse.jdt.internal.launching.macosx.MacOSXType</code>
+	 * @since 3.7.0
+	 */
+	public static final String TYPE_ID = "org.eclipse.jdt.internal.launching.macosx.MacOSXType"; //$NON-NLS-1$
+	
 	@Override
 	public String getName() {
-		return MacOSXLaunchingPlugin.getString("MacOSXVMType.name"); //$NON-NLS-1$
+		return LaunchingMessages.MacOSXVMInstallType_mmacosx_vm_type_name;
 	}
 	
 	@Override
@@ -115,10 +116,8 @@ public class MacOSXVMInstallType extends StandardVMType {
 					if (install == null) {
 						VMStandin vm= new VMStandin(this, id);
 						vm.setInstallLocation(home);
-						String format= MacOSXLaunchingPlugin.getString(isDefault
-								? "MacOSXVMType.jvmDefaultName"		//$NON-NLS-1$
-										: "MacOSXVMType.jvmName");				//$NON-NLS-1$
-										vm.setName(MessageFormat.format(format, new Object[] { name } ));
+						name = (isDefault ? NLS.bind(LaunchingMessages.MacOSXVMInstallType_macosx_default_vm_name, new Object[] { name }) : name);
+						vm.setName(name);
 						vm.setLibraryLocations(getDefaultLibraryLocations(home));
 						vm.setJavadocLocation(getDefaultJavadocLocation(home));
 						install= vm.convertToRealVM();
@@ -135,7 +134,7 @@ public class MacOSXVMInstallType extends StandardVMType {
 			}
 			return defaultLocation;
 		} catch (CoreException e) {
-			MacOSXLaunchingPlugin.getDefault().getLog().log(e.getStatus());
+			LaunchingPlugin.log(e.getStatus());
 			return detectInstallLocationOld();
 		}
 	}
@@ -154,7 +153,7 @@ public class MacOSXVMInstallType extends StandardVMType {
 		}
 
 		if (!JVM_VERSIONS_FOLDER.exists() || !JVM_VERSIONS_FOLDER.isDirectory()) {
-			String message= NLS.bind(MacOSXLaunchingPlugin.getString("MacOSXVMType.error.jvmDirectoryNotFound"), JVM_VERSIONS_FOLDER);  //$NON-NLS-1$
+			String message = NLS.bind("Java VM default location \"{0}\" not found, JVMs were not scanned.", JVM_VERSIONS_FOLDER);  //$NON-NLS-1$
 			LaunchingPlugin.log(message);
 			return null;
 		}
@@ -173,10 +172,8 @@ public class MacOSXVMInstallType extends StandardVMType {
 				if (install == null) {
 					VMStandin vm= new VMStandin(this, version);
 					vm.setInstallLocation(home);
-					String format= MacOSXLaunchingPlugin.getString(isDefault
-												? "MacOSXVMType.jvmDefaultName"		//$NON-NLS-1$
-												: "MacOSXVMType.jvmName");				//$NON-NLS-1$
-					vm.setName(MessageFormat.format(format, new Object[] { version } ));
+					String name = (isDefault ? NLS.bind(LaunchingMessages.MacOSXVMInstallType_macosx_default_vm_name, new Object[] { version }) : version);
+					vm.setName(name);
 					vm.setLibraryLocations(getDefaultLibraryLocations(home));
 					vm.setJavadocLocation(getDefaultJavadocLocation(home));
 					
@@ -279,18 +276,6 @@ public class MacOSXVMInstallType extends StandardVMType {
 		setDefaultRootPath(""); //$NON-NLS-1$
 		return Path.EMPTY;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.launching.StandardVMType#validateInstallLocation(java.io.File)
-	 */
-	@Override
-	public IStatus validateInstallLocation(File javaHome) {
-		String id= MacOSXLaunchingPlugin.getUniqueIdentifier();
-		File java= new File(javaHome, "bin"+File.separator+"java"); //$NON-NLS-2$ //$NON-NLS-1$
-		if (java.isFile())
-			return new Status(IStatus.OK, id, 0, "ok", null); //$NON-NLS-1$
-		return new Status(IStatus.ERROR, id, 0, MacOSXLaunchingPlugin.getString("MacOSXVMType.error.notRoot"), null); //$NON-NLS-1$
-	}
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.launching.StandardVMType#getDefaultJavadocLocation(java.io.File)
@@ -327,13 +312,5 @@ public class MacOSXVMInstallType extends StandardVMType {
 		
 		// fall back
 		return super.getDefaultJavadocLocation(installLocation);
-	}
-
-	/*
-	 * Overridden to make it visible.
-	 */
-	@Override
-	protected String getVMVersion(File javaHome, File javaExecutable) {
-		return super.getVMVersion(javaHome, javaExecutable);
 	}
 }
