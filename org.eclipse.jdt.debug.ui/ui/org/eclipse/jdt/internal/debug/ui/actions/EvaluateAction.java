@@ -15,7 +15,6 @@ package org.eclipse.jdt.internal.debug.ui.actions;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -23,17 +22,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
-import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.model.ISourceLocator;
-import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugModelPresentation;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.debug.ui.IDebugView;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.debug.core.IJavaDebugTarget;
 import org.eclipse.jdt.debug.core.IJavaObject;
 import org.eclipse.jdt.debug.core.IJavaStackFrame;
@@ -46,6 +40,7 @@ import org.eclipse.jdt.debug.eval.IEvaluationListener;
 import org.eclipse.jdt.debug.eval.IEvaluationResult;
 import org.eclipse.jdt.debug.ui.IJavaDebugUIConstants;
 import org.eclipse.jdt.internal.debug.core.JDIDebugPlugin;
+import org.eclipse.jdt.internal.debug.core.JavaDebugUtils;
 import org.eclipse.jdt.internal.debug.ui.EvaluationContextManager;
 import org.eclipse.jdt.internal.debug.ui.JDIDebugUIPlugin;
 import org.eclipse.jdt.internal.debug.ui.JavaWordFinder;
@@ -73,7 +68,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorActionDelegate;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IPartListener;
@@ -237,9 +231,8 @@ public abstract class EvaluateAction implements IEvaluationListener, IWorkbenchW
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 if (stackFrame.isSuspended()) {
-                    IJavaElement javaElement= getJavaElement(stackFrame);
-                    if (javaElement != null) {
-                        IJavaProject project = javaElement.getJavaProject();
+                    IJavaProject project = JavaDebugUtils.resolveJavaProject(stackFrame);
+                    if(project != null) {
                         IEvaluationEngine engine = null;
                         try {
                             Object selection= getSelectedObject();
@@ -292,29 +285,6 @@ public abstract class EvaluateAction implements IEvaluationListener, IWorkbenchW
         }
 	}
 		
-	protected IJavaElement getJavaElement(IStackFrame stackFrame) {
-		
-		// Get the corresponding element.
-		ILaunch launch = stackFrame.getLaunch();
-		if (launch == null) {
-			return null;
-		}
-		ISourceLocator locator= launch.getSourceLocator();
-		if (locator == null)
-			return null;
-		
-		Object sourceElement = locator.getSourceElement(stackFrame);
-		if (sourceElement instanceof IJavaElement) {
-			return (IJavaElement) sourceElement;
-		} else if (sourceElement instanceof IResource) {
-			IJavaProject project = JavaCore.create(((IResource)sourceElement).getProject());
-			if (project.exists()) {
-				return project;
-			}
-		}			
-		return null;
-	}
-	
 	/**
 	 * Updates the enabled state of the action that this is a
 	 * delegate for.
@@ -337,7 +307,7 @@ public abstract class EvaluateAction implements IEvaluationListener, IWorkbenchW
 		if (selection instanceof ITextSelection) {
 			ITextSelection ts = (ITextSelection)selection;
 			String text= ts.getText();
-			if (textHasContent(text)) {
+			if (text != null && text.length() > 0) {
 				selectedObject= text;
 				fRegion = new Region(ts.getOffset(), ts.getLength());
 			} else if (getTargetPart() instanceof IEditorPart) {
@@ -356,7 +326,7 @@ public abstract class EvaluateAction implements IEvaluationListener, IWorkbenchW
 					if (selection instanceof ITextSelection) {
 						ITextSelection ts = (ITextSelection)selection;
 						String text= ts.getText();
-						if (textHasContent(text)) {
+						if (text != null && text.length() > 0) {
 							selectedObject= text;
 						} else if (editor instanceof ITextEditor) {
 							selectedObject= resolveSelectedObjectUsingToken(selectedObject, ts, editor);
@@ -400,31 +370,6 @@ public abstract class EvaluateAction implements IEvaluationListener, IWorkbenchW
 			}
 		}
 		return null;
-	}
-	
-	/**
-	 * Resolve an editor input from the source element of the stack frame
-	 * argument, and return whether it's equal to the editor input for the
-	 * editor that owns this action.
-	 */
-	protected boolean compareToEditorInput(IStackFrame stackFrame) {
-		ILaunch launch = stackFrame.getLaunch();
-		if (launch == null) {
-			return false;
-		}
-		ISourceLocator locator= launch.getSourceLocator();
-		if (locator == null) {
-			return false;
-		}
-		Object sourceElement = locator.getSourceElement(stackFrame);
-		if (sourceElement == null) {
-			return false;
-		}
-		IEditorInput sfEditorInput= getDebugModelPresentation().getEditorInput(sourceElement);
-		if (getTargetPart() instanceof IEditorPart) {
-			return ((IEditorPart)getTargetPart()).getEditorInput().equals(sfEditorInput);
-		}
-		return false;
 	}
 	
 	protected Shell getShell() {
@@ -491,20 +436,6 @@ public abstract class EvaluateAction implements IEvaluationListener, IWorkbenchW
 			}
 		}
 		return null;
-	}
-	
-	protected boolean textHasContent(String text) {
-		if (text != null) {
-			int length= text.length();
-			if (length > 0) {
-				for (int i= 0; i < length; i++) {
-					if (Character.isLetterOrDigit(text.charAt(i))) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
 	}
 	
 	/**

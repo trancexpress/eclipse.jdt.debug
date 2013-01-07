@@ -11,11 +11,8 @@
 package org.eclipse.jdt.internal.debug.ui.snippeteditor;
 
  
-import org.eclipse.jdt.debug.ui.IJavaDebugUIConstants;
 import org.eclipse.jdt.internal.ui.javaeditor.BasicCompilationUnitEditorActionContributor;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 
@@ -26,8 +23,6 @@ public class SnippetEditorActionContributor extends BasicCompilationUnitEditorAc
  	
 	protected JavaSnippetEditor fSnippetEditor;
 	
-	private StopAction fStopAction;
-	private SelectImportsAction fSelectImportsAction;
 	private SnippetOpenOnSelectionAction fOpenOnSelectionAction;
 	private SnippetOpenHierarchyOnSelectionAction fOpenOnTypeSelectionAction;
 	
@@ -35,21 +30,6 @@ public class SnippetEditorActionContributor extends BasicCompilationUnitEditorAc
 		super();
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToToolBar(org.eclipse.jface.action.IToolBarManager)
-	 */
-	@Override
-	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		
-		if (fStopAction == null) {
-			toolBarManager.add(new Separator(IJavaDebugUIConstants.EVALUATION_GROUP));
-			return;
-		}
-		toolBarManager.add(fStopAction);
-		toolBarManager.add(fSelectImportsAction);
-		toolBarManager.update(false);
-	}
-			
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToMenu(org.eclipse.jface.action.IMenuManager)
 	 */
@@ -86,8 +66,6 @@ public class SnippetEditorActionContributor extends BasicCompilationUnitEditorAc
 		}
 
 		if (fOpenOnSelectionAction != null) {
-			fStopAction.setEditor(fSnippetEditor);		
-			fSelectImportsAction.setEditor(fSnippetEditor);
 			fOpenOnSelectionAction.setEditor(fSnippetEditor);
 			fOpenOnTypeSelectionAction.setEditor(fSnippetEditor);
 		}
@@ -99,12 +77,6 @@ public class SnippetEditorActionContributor extends BasicCompilationUnitEditorAc
 		 
 		fOpenOnSelectionAction= new SnippetOpenOnSelectionAction(fSnippetEditor);
 		fOpenOnTypeSelectionAction= new SnippetOpenHierarchyOnSelectionAction(fSnippetEditor);
-		fStopAction= new StopAction(fSnippetEditor);
-		
-		fSelectImportsAction= new SelectImportsAction(fSnippetEditor);
-		if (fSnippetEditor.getFile() == null) {
-			fSelectImportsAction.setEnabled(false);
-		}
 	}	
 	
 	protected void updateStatus(JavaSnippetEditor editor) {
