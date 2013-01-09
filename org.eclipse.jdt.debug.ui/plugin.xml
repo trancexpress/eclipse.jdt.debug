@@ -48,6 +48,33 @@
       </editor>
    </extension>
    <extension
+       point="org.eclipse.ui.handlers">
+    <handler
+          class="org.eclipse.jdt.internal.debug.ui.handlers.StopThreadsHandler"
+          commandId="org.eclipse.jdt.debug.ui.stop.thread">
+       <activeWhen>
+          <with
+                variable="activePartId">
+             <equals
+                   value="org.eclipse.debug.ui.DebugView">
+             </equals>
+          </with>
+       </activeWhen>
+    </handler>
+    <handler
+          class="org.eclipse.jdt.internal.debug.ui.handlers.InterruptThreadsHandler"
+          commandId="org.eclipse.jdt.debug.ui.interrupt.thread">
+       <activeWhen>
+          <with
+                variable="activePartId">
+             <equals
+                   value="org.eclipse.debug.ui.DebugView">
+             </equals>
+          </with>
+       </activeWhen>
+    </handler>
+ </extension>
+   <extension
          point="org.eclipse.ui.editorActions">
       <editorContribution
             targetID="org.eclipse.jdt.ui.CompilationUnitEditor"
@@ -429,7 +456,7 @@
         </command>
        </menuContribution>
        <menuContribution
-             locationURI="popup:org.eclipse.debug.ui.DebugView?endof=emptyThreadGroup">
+             locationURI="popup:org.eclipse.debug.ui.DebugView?endof=threadGroup">
           <menu
                 id="stop_and_interrupt_submenu"
                 label="%StopInterruptMenu.label"
@@ -441,18 +468,6 @@
                    icon="$nl$/icons/full/obj16/thread_obj.gif"
                    label="%InterruptThreadCommand.label"
                    style="push">
-                <visibleWhen>
-                   <with
-                         variable="selection">
-                      <count
-                            value="1">
-                      </count>
-                      <test
-                            property="org.eclipse.jdt.debug.ui.isJavaThread"
-                            value="true">
-                      </test>
-                   </with>
-                </visibleWhen>
              </command>
              <command
                    commandId="org.eclipse.jdt.debug.ui.stop.thread"
@@ -461,19 +476,17 @@
                    label="%StopThreadCommand.name"
                    style="push"
                    tooltip="%StopThreadCommand.description">
-                <visibleWhen>
-                   <with
-                         variable="selection">
-                      <count
-                            value="1">
-                      </count>
-                      <test
-                            property="org.eclipse.jdt.debug.ui.isJavaThreadRunning"
-                            value="false">
-                      </test>
-                   </with>
-                </visibleWhen>
              </command>
+             <visibleWhen
+                   checkEnabled="false">
+                <with
+                      variable="activeMenuSelection">
+                   <test
+                         property="org.eclipse.jdt.debug.ui.isJavaThreadsRunning"
+                         value="true">
+                   </test>
+                </with>
+             </visibleWhen>
           </menu>
        </menuContribution>
    </extension>
@@ -2750,7 +2763,6 @@ M4 = Platform-specific fourth key
       </command>
       <command
             categoryId="org.eclipse.debug.ui.category.run"
-            defaultHandler="org.eclipse.jdt.internal.debug.ui.handlers.InterruptThreadsHandler"
             description="%InterruptThreadCommand.description"
             helpContextId="interrupt_thread_context_id"
             id="org.eclipse.jdt.debug.ui.interrupt.thread"
@@ -2758,7 +2770,6 @@ M4 = Platform-specific fourth key
       </command>
       <command
             categoryId="org.eclipse.debug.ui.category.run"
-            defaultHandler="org.eclipse.jdt.internal.debug.ui.handlers.StopThreadsHandler"
             description="%StopThreadCommand.description"
             helpContextId="stop_thread_context_id"
             id="org.eclipse.jdt.debug.ui.stop.thread"
@@ -3728,9 +3739,9 @@ M4 = Platform-specific fourth key
        point="org.eclipse.core.expressions.propertyTesters">
     <propertyTester
           class="org.eclipse.jdt.internal.debug.ui.actions.JDIPropertyTester"
-          id="org.eclipse.jdt.debug.ui.propertyTeszter"
+          id="org.eclipse.jdt.debug.ui.propertyTester"
           namespace="org.eclipse.jdt.debug.ui"
-          properties="isJavaThread,isJavaThreadRunning"
+          properties="isJavaThreadsRunning"
           type="java.lang.Object">
     </propertyTester>
  </extension>

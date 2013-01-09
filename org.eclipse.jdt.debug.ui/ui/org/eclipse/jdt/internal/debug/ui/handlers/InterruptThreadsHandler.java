@@ -15,7 +15,9 @@ import java.util.Iterator;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 import org.eclipse.jdt.internal.debug.core.model.JDIThread;
 import org.eclipse.jdt.internal.debug.ui.JDIDebugUIPlugin;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -34,9 +36,19 @@ public class InterruptThreadsHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IStructuredSelection sel = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
 		if(sel != null && !sel.isEmpty()) {
-			for(Iterator<JDIThread> i = sel.iterator(); i.hasNext();) {
+			for(Iterator<?> i = sel.iterator(); i.hasNext();) {
 				try {
-					i.next().interrupt();
+					Object o = i.next();
+					if(o instanceof JDIThread) {
+						JDIThread thread = (JDIThread) o;
+						thread.interrupt();
+						thread.fireChangeEvent(DebugEvent.STATE);
+					}
+					else if(o instanceof JDIStackFrame) {
+						JDIThread thread = (JDIThread) ((JDIStackFrame)o).getThread();
+						thread.interrupt();
+						thread.fireChangeEvent(DebugEvent.STATE);
+					}
 				}
 				catch(DebugException de) {
 					JDIDebugUIPlugin.log(de);

@@ -516,9 +516,7 @@ public class ThreadReferenceImpl extends ObjectReferenceImpl implements	ThreadRe
 		}
 	}
 
-	/**
-	 * Stops this thread with an asynchronous exception.
-	 * 
+	/* (non-Javadoc)
 	 * @see com.sun.jdi.ThreadReference#stop(com.sun.jdi.ObjectReference)
 	 */
 	public void stop(ObjectReference throwable) throws InvalidTypeException {

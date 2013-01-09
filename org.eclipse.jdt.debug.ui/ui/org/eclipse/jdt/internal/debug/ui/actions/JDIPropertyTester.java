@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.jdt.internal.debug.ui.actions;
 
+import java.util.Iterator;
+
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.jdt.internal.debug.core.model.JDIThread;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -21,21 +23,30 @@ import org.eclipse.jface.viewers.IStructuredSelection;
  */
 public class JDIPropertyTester extends PropertyTester {
 
-	public static final String IS_JAVA_THREAD = "isJavaThread"; //$NON-NLS-1$
-	public static final String IS_JAVA_THREAD_RUNNING = "isJavaThreadRunning"; //$NON-NLS-1$
+	public static final String IS_JAVA_THREADS_RUNNING = "isJavaThreadsRunning"; //$NON-NLS-1$
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.expressions.IPropertyTester#test(java.lang.Object, java.lang.String, java.lang.Object[], java.lang.Object)
 	 */
 	public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
-		if(IS_JAVA_THREAD.equals(property)) {
-			return ((IStructuredSelection)receiver).getFirstElement() instanceof JDIThread;
-		}
-		if(IS_JAVA_THREAD_RUNNING.equals(property)) {
-			Object o = ((IStructuredSelection) receiver).getFirstElement();
-			if(o instanceof JDIThread) {
-				JDIThread thread = (JDIThread) o;
-				return thread.isSuspended();
+		if(IS_JAVA_THREADS_RUNNING.equals(property) && receiver instanceof IStructuredSelection) {
+			if(receiver instanceof IStructuredSelection) {
+				IStructuredSelection selection = (IStructuredSelection) receiver;
+				boolean running = true;
+				for (Iterator<?> i = selection.iterator(); i.hasNext();) {
+					Object o = i.next();
+					if(o instanceof JDIThread) {
+						JDIThread thread = (JDIThread) o;
+						running &= !thread.isSuspended();
+						if(!running) {
+							return false;
+						}
+					}
+					else {
+						return false;
+					}
+				}
+				return running;
 			}
 		}
 		return false;
