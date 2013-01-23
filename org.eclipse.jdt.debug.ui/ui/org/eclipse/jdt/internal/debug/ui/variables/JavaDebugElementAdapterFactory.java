@@ -16,6 +16,7 @@ import org.eclipse.debug.internal.ui.viewers.model.provisional.IElementContentPr
 import org.eclipse.debug.internal.ui.viewers.model.provisional.IElementLabelProvider;
 import org.eclipse.debug.internal.ui.viewers.model.provisional.IElementMementoProvider;
 import org.eclipse.debug.ui.actions.IWatchExpressionFactoryAdapter;
+import org.eclipse.jdt.debug.core.IJavaDebugTarget;
 import org.eclipse.jdt.debug.core.IJavaStackFrame;
 import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.debug.core.IJavaVariable;
@@ -43,6 +44,7 @@ public class JavaDebugElementAdapterFactory implements IAdapterFactory {
 	private static final IWatchExpressionFactoryAdapter fgWEVariable = new JavaWatchExpressionFilter();
 	private static final IElementMementoProvider fgMPStackFrame = new JavaStackFrameMementoProvider();
 	private static final IElementLabelProvider fgLPFrame = new JavaStackFrameLabelProvider();
+	private static final IElementMementoProvider fgMPDebugTarget = new JavaDebugTargetMementoProvider();
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
@@ -81,6 +83,8 @@ public class JavaDebugElementAdapterFactory implements IAdapterFactory {
 		if (IElementMementoProvider.class.equals(adapterType)) {
 			if (adaptableObject instanceof IJavaStackFrame) {
 				return fgMPStackFrame;
+			} else if (adaptableObject instanceof IJavaDebugTarget) {
+				return fgMPDebugTarget;
 			}
 		}
 		return null;

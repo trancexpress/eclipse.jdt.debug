@@ -10,10 +10,13 @@
  *******************************************************************************/
 package org.eclipse.jdt.internal.debug.ui.variables;
 
+import java.util.Arrays;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.internal.ui.model.elements.DebugElementMementoProvider;
 import org.eclipse.debug.internal.ui.viewers.model.provisional.IElementMementoProvider;
 import org.eclipse.debug.internal.ui.viewers.model.provisional.IPresentationContext;
+import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jdt.debug.core.IJavaStackFrame;
 
 /**
@@ -30,12 +33,19 @@ public class JavaStackFrameMementoProvider extends DebugElementMementoProvider i
 	@Override
 	protected String getElementName(Object element, IPresentationContext context) throws CoreException {
 		if (element instanceof IJavaStackFrame) {
-			StringBuffer buf = new StringBuffer();
 			IJavaStackFrame frame = (IJavaStackFrame) element;
-			buf.append(frame.getDeclaringTypeName());
-			buf.append("#"); //$NON-NLS-1$
-			buf.append(frame.getSignature());
-			return buf.toString();
+			if (IDebugUIConstants.ID_DEBUG_VIEW.equals(context.getId())) {
+				int index = Arrays.asList(frame.getThread().getStackFrames()).indexOf(frame);
+				if (index >= 0) {
+					return Integer.toString(index);
+				}
+			} else {
+				StringBuffer buf = new StringBuffer();
+				buf.append(frame.getDeclaringTypeName());
+				buf.append("#"); //$NON-NLS-1$
+				buf.append(frame.getSignature());
+				return buf.toString();
+			}
 		}
 		return null;
 	}
