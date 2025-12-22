@@ -135,6 +135,7 @@ import org.eclipse.jdt.debug.tests.refactoring.RenamePackageUnitTests;
 import org.eclipse.jdt.debug.tests.refactoring.RenamePublicTypeUnitTests;
 import org.eclipse.jdt.debug.tests.sourcelookup.ArchiveSourceLookupTests;
 import org.eclipse.jdt.debug.tests.sourcelookup.Bug565462Tests;
+import org.eclipse.jdt.debug.tests.sourcelookup.ClassFileEditorHighlightingTest;
 import org.eclipse.jdt.debug.tests.sourcelookup.DefaultSourceContainerTests;
 import org.eclipse.jdt.debug.tests.sourcelookup.DirectorySourceContainerTests;
 import org.eclipse.jdt.debug.tests.sourcelookup.DirectorySourceLookupTests;
@@ -229,6 +230,7 @@ public class AutomatedSuite extends DebugSuite {
 		addTest(new TestSuite(TypeResolutionTests.class));
 		addTest(new TestSuite(JarSourceLookupTests.class));
 		addTest(new TestSuite(Bug565462Tests.class));
+		addTest(new UIThreadTestSuite(ClassFileEditorHighlightingTest.class));
 
 	// Variable tests
 		addTest(new TestSuite(InstanceVariableTests.class));
