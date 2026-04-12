@@ -18,7 +18,6 @@ import org.eclipse.debug.internal.ui.sourcelookup.SourceLookupFacility;
 import org.eclipse.debug.ui.sourcelookup.ISourceDisplay;
 import org.eclipse.jdt.debug.core.IJavaStackFrame;
 import org.eclipse.jdt.internal.debug.core.model.GroupedStackFrame;
-import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.IShowInTargetList;
 
@@ -26,8 +25,6 @@ import org.eclipse.ui.part.IShowInTargetList;
  * @since 3.2
  */
 public class JavaDebugShowInAdapterFactory implements IAdapterFactory {
-
-	private ISourceDisplay javaStackFrameSourceDisplayAdapter = new JavaStackFrameSourceDisplayAdapter();
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
@@ -53,9 +50,6 @@ public class JavaDebugShowInAdapterFactory implements IAdapterFactory {
 					var frame = groupedFrames.getTopMostFrame();
 					SourceLookupFacility.getDefault().displaySource(frame, page, forceSourceLookup);
 				};
-			}
-			if (adaptableObject instanceof JDIStackFrame) {
-				return (/* ISourceDisplay */ T) javaStackFrameSourceDisplayAdapter;// ensure the same instance is reused
 			}
 		}
 		return null;

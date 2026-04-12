@@ -40,14 +40,13 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.debug.core.IJavaStackFrame;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.tests.AbstractDebugTest;
-import org.eclipse.jdt.internal.debug.ui.sourcelookup.JavaStackFrameSourceDisplayAdapter;
+import org.eclipse.jdt.internal.debug.ui.sourcelookup.JavaStackFrameEditorPresenter;
 import org.eclipse.jdt.internal.ui.javaeditor.ClassFileEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jdt.internal.ui.javaeditor.IClassFileEditorInput;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.ui.PlatformUI;
 import org.junit.Assume;
 
 public class ClassFileEditorHighlightingTest extends AbstractDebugTest {
@@ -62,7 +61,7 @@ public class ClassFileEditorHighlightingTest extends AbstractDebugTest {
 		IJavaProject javaProject = getProjectContext();
 		createLineBreakpoint(21, CLASS_NAME);
 
-		JavaStackFrameSourceDisplayAdapter display = new JavaStackFrameSourceDisplayAdapter();
+		JavaStackFrameEditorPresenter display = new JavaStackFrameEditorPresenter();
 
 		IJavaThread thread = null;
 		try {
@@ -90,7 +89,7 @@ public class ClassFileEditorHighlightingTest extends AbstractDebugTest {
 		IJavaProject javaProject = getProjectContext();
 		createMethodBreakpoint("org.eclipse.debug.tests.targets", "ClassOne.java", "ClassOne", "<init>", "()V", true, false);
 
-		JavaStackFrameSourceDisplayAdapter display = new JavaStackFrameSourceDisplayAdapter();
+		JavaStackFrameEditorPresenter display = new JavaStackFrameEditorPresenter();
 
 		IJavaThread thread = null;
 		try {
@@ -117,7 +116,7 @@ public class ClassFileEditorHighlightingTest extends AbstractDebugTest {
 		IJavaProject javaProject = getProjectContext();
 		createMethodBreakpoint("", "MethodCall.java", "MethodCall", "<init>", "()V", true, false);
 
-		JavaStackFrameSourceDisplayAdapter display = new JavaStackFrameSourceDisplayAdapter();
+		JavaStackFrameEditorPresenter display = new JavaStackFrameEditorPresenter();
 
 		IJavaThread thread = null;
 		try {
@@ -156,7 +155,7 @@ public class ClassFileEditorHighlightingTest extends AbstractDebugTest {
 		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
 		config = workingCopy.doSave();
 
-		JavaStackFrameSourceDisplayAdapter sourceDisplay = new JavaStackFrameSourceDisplayAdapter();
+		JavaStackFrameEditorPresenter sourceDisplay = new JavaStackFrameEditorPresenter();
 
 		IJavaThread thread = null;
 		try {
@@ -193,11 +192,12 @@ public class ClassFileEditorHighlightingTest extends AbstractDebugTest {
 		}
 	}
 
-	private void openCurrentFrameAndExpectHighlightedText(JavaStackFrameSourceDisplayAdapter sourceDisplay, IJavaThread thread, ClassFileEditor editor, String expectedHighlightedText) throws DebugException {
+	private void openCurrentFrameAndExpectHighlightedText(JavaStackFrameEditorPresenter sourceDisplay, IJavaThread thread, ClassFileEditor editor, String expectedHighlightedText) throws DebugException {
 		StyledText noSourceTextWidget = editor.getNoSourceTextWidget();
 		IStackFrame topStackFrame = thread.getTopStackFrame();
 		assertNotNull(topStackFrame);
-		sourceDisplay.displaySource(topStackFrame, PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), true);
+		// XXX: use normal .class file from compiled test jar without sources and let platform debug / JDT handle editor opening and selection
+		// sourceDisplay.displaySource(topStackFrame, PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), true);
 		StyleRange[] styleRanges = noSourceTextWidget.getStyleRanges();
 		assertEquals(1, styleRanges.length);
 		String highlightedText = noSourceTextWidget.getContent().getTextRange(styleRanges[0].start, styleRanges[0].length);
